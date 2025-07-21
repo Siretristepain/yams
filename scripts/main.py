@@ -52,19 +52,36 @@ def choices(turn: int):
     Se sert de la variable 'turn' en argument pour savoir si le joueur peut encore lancer les dés ou non.
 
     Args:
-        turn (int): le tour du jouer en cours.
+        turn (int): le tour du jouer en cours (de 1 à 3).
     """
 
     choice = input(f"""
 Que souhaitez vous faire :
 
-(1) Lancer les 5 dés
+(1) Lancer les 5 dés {'X' if turn >= 3 else ''}
 (2) Relancer certains dés {'X' if turn >= 3 else ''}
-(3) Conserver 
+(3) Conserver {'X' if turn == 0 else ''}
 (4) Consulter la fiche de score
 (q) Quitter
+
+Votre choix :
 """)
-    
+
+    if choice not in ["1", "2", "3", "4", "q"]:
+        logger.error(f"L'action {choice} n'est pas une action valide.")
+        print(f"Veuillez saisir une action valide.")
+        choices(turn=turn)
+
+    # Gestion des choix invalides selon le tour
+    if turn == 0 and choice == "3":
+        logger.debug("Le joueur souhaite conserver sans avoir lancer les dés.")
+        print(f"Vous ne pouvez pas conserver sans avoir lancer les dés.")
+        choices(turn=turn)
+    elif turn >= 3 and (choice == "1" or choice == "2"):
+        logger.debug("Le joueur souhaite relancer les dés malgré ses 3 tentatives.")
+        print("Vous avez déjà lancer les dés 3 fois.")
+        choices(turn=turn)
+
     return choice
 
 def main():
@@ -81,9 +98,12 @@ def main():
             logger.error(f"Le format du nombre de joueur n'est pas correct : {nb_players}.")
             print(f"Le nombre de joueur attendus doit être un entier positif.")
 
+    # On initialise une variable pour identifier le tour
+    turn = 1
+
     # Afficher les différentes options
     logger.debug("Affichage des options...")
-    choice = choices(turn=10)
+    choice = choices(turn=turn)
     logger.debug(f"Le joueur à choisis l'option : {choice}.")
 
 # a = print(show_dices(dices=[1,2,3,4,5]))

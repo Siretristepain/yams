@@ -1,5 +1,6 @@
 import logging
 import random
+import pandas as pd
 
 logger = logging.getLogger("__name__")
 logging.basicConfig(filename='./logs/yams.log', level=logging.DEBUG, encoding='utf-8')
@@ -84,6 +85,23 @@ Votre choix :
 
     return choice
 
+def show_scores(d: dict):
+    """
+    Méthode utilisée pour afficher la feuille des scores à partir d'un dictionnaire contenant les scores de chaque joueur.
+
+    Args:
+        d (dict): Dictionnaire qui contient les scores de chaque joueur. Les clés sont les noms des joueurs (str)
+        et les valeurs sont une liste de 17 éléments.
+
+    Returns:
+        None : Rien. Se contente de retourner un print du DataFrame de la feuille de score.
+    """
+
+    logger.debug("Affichage de la feuille de scores...")
+    index = ["1", "2", "3", "4", "5", "6", "Total", "Bonus", "Total", "_", "Brelan", "Carré", "Full (25)", "Petite suite (30)", "Grande suite (40)", "Yams (50)", "Chance"]
+    scores = pd.DataFrame(d, index=index)
+    return print(scores)
+
 def main():
 
     # Demander le nombre de joueur
@@ -98,14 +116,37 @@ def main():
             logger.error(f"Le format du nombre de joueur n'est pas correct : {nb_players}.")
             print(f"Le nombre de joueur attendus doit être un entier positif.")
 
-    # On initialise une variable pour identifier le tour
-    turn = 1
+    # On demande le nom des joueurs
+    players_list = []
+    for i in range(1, nb_players+1):
+        player = input(f"Saisir le nom du joueur {i} : ")
+        players_list.append(player)
+        logger.debug(f"Nom du joueur {i} : {player}")
 
-    # Afficher les différentes options
-    logger.debug("Affichage des options...")
-    choice = choices(turn=turn)
-    logger.debug(f"Le joueur à choisis l'option : {choice}.")
+    # On initialise le dictionnaire utile à la feuille des scores
+    score_dict = {k: ['', '', '', '', '', '', '', '', '', '_', '', '', '', '', '', '', ''] for k in players_list}
+
+    show_scores(d=score_dict)
+
+
+    # On initialise une variable pour identifier le tour
+    turn = 1 # Pas utile à cette endroit !
+    running = True
+
+    # On démarre la boucle de jeu
+    while running:
+
+        # Afficher les différentes options
+        logger.debug("Affichage des options...")
+        choice = choices(turn=turn)
+        logger.debug(f"Le joueur à choisis l'option : {choice}.")
 
 # a = print(show_dices(dices=[1,2,3,4,5]))
 main()
+
+# dictionnaire = {
+#     "Raphael": [1,2,3,4,5,6,7,8,9,'_',10,11,12,13,14,15,16],
+#     "Mathilde": [1,2,3,4,5,6,7,8,9,'_',10,11,12,13,14,15,16],
+# }
+# show_scores(d=dictionnaire)
 # print(choices())
